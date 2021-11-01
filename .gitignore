@@ -1,0 +1,9 @@
+__pycache__/*
+**/__pycache__
+credential.json
+build/*
+data/*
+*.pyc
+token.pickle
+.idea/**
+k8s/secrets/*
