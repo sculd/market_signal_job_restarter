@@ -2,6 +2,7 @@ import os
 from kubernetes import client
 
 _PODS_NAME_PREFIX = os.getenv("POD_NAME_PREFIX")
+_K8_CLUSTER_IP = os.getenv("K8_CLUSTER_IP")
 
 import google.auth
 from google.auth.transport import requests
@@ -10,6 +11,7 @@ from google.auth.transport import requests
 def get_token():
     # getting the credentials and project details for gcp project
     credentials, your_project_id = google.auth.default(scopes=["https://www.googleapis.com/auth/cloud-platform"])
+    print('[get_token] your_project_id:', your_project_id)
 
     # getting request object
     auth_req = google.auth.transport.requests.Request()
@@ -20,17 +22,17 @@ def get_token():
 
 
 def delete_pods():
-    print('delete_pods')
-    print(get_token())
+    print('[delete_pods]')
+    print('[delete_pods] get_token:', get_token())
 
     configuration = client.Configuration()
-    configuration.host = "https://{ip}:443".format(ip=os.getenv('k8_cluster_ip'))
+    configuration.host = "https://{ip}:443".format(ip=_K8_CLUSTER_IP)
     configuration.verify_ssl = False
     configuration.api_key = {"authorization": "Bearer " + get_token()}
     client.Configuration.set_default(configuration)
 
     v1 = client.CoreV1Api()
-    print("Listing pods:")
+    print("[delete_pods] Listing pods:")
     ret = v1.list_pod_for_all_namespaces(watch=False)
     for i in ret.items:
         print("%s\t%s" % (i.metadata.namespace, i.metadata.name))
@@ -58,5 +60,6 @@ def hello_world(request):
         `make_response <http://flask.pocoo.org/docs/1.0/api/#flask.Flask.make_response>`.
     """
     request_json = request.get_json()
-    print(request_json)
+    print('request_json:', request_json)
     delete_pods()
+    return 'delete_pods'
