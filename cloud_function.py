@@ -1,7 +1,7 @@
 import os
 from kubernetes import client
 
-_PODS_NAME_PREFIX = "market-realtime-move-report"
+_PODS_NAME_PREFIX = os.getenv("POD_NAME_PREFIX")
 
 import google.auth
 from google.auth.transport import requests
